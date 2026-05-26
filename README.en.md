@@ -46,7 +46,7 @@ Use the installer for normal setups. It installs the project into
 Run:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.1/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.2/install.sh | bash
 ```
 
 ### Verify
@@ -88,7 +88,7 @@ The default installation uses:
 To pin the version or install location:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.1/install.sh | CODEX_AUTH_REF=v0.1.1 CODEX_AUTH_PREFIX="$HOME/.local" bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.2/install.sh | CODEX_AUTH_REF=v0.1.2 CODEX_AUTH_PREFIX="$HOME/.local" bash
 ```
 
 ## Quick Start
@@ -122,6 +122,7 @@ Show detailed current-account status:
 
 ```bash
 codex-auth status
+codex-auth status work
 ```
 
 ## Commands
@@ -181,9 +182,9 @@ for a fast local-only view:
 codex-auth list --no-check
 ```
 
-### `codex-auth status`
+### `codex-auth status [name]`
 
-Show detailed status for the active profile.
+Show detailed status for the active profile or a named profile.
 
 ```text
 * pro
@@ -194,6 +195,13 @@ Show detailed status for the active profile.
     5h    0% used  100% left  resets 2026-05-26 23:10:00 CST
     7d    3% used   97% left  resets 2026-06-01 19:25:16 CST
   credits: balance=0, reset-credits=0
+```
+
+Examples:
+
+```bash
+codex-auth status
+codex-auth status work
 ```
 
 ### `codex-auth check [name|--all]`

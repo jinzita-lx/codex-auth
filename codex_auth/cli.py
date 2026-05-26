@@ -19,7 +19,7 @@ USAGE = """Usage:
   codex-auth rename <old> <new>
                                 Rename a saved profile
   codex-auth current           Show active profile marker, identity, usability, 5h/7d usage, and reset time
-  codex-auth status            Same as current
+  codex-auth status [name]     Show detailed status for active or named profile
   codex-auth remove <name>     Delete a saved profile
   codex-auth path              Show auth/profile paths
 
@@ -67,8 +67,12 @@ def main(argv: List[str] = None) -> int:
             if cmd == "check":
                 _check_profiles(store, palette, argv)
                 return 0
-            if cmd in ("current", "status"):
-                _show_current(store, palette)
+            if cmd == "current":
+                _require_count(argv, 0, "current")
+                _show_current(store, palette, run_codex_status=True)
+                return 0
+            if cmd == "status":
+                _show_status(store, palette, argv, run_codex_status=not argv)
                 return 0
             if cmd in ("remove", "rm", "delete"):
                 _require_count(argv, 1, "remove")
@@ -142,12 +146,43 @@ def _check_profiles(store: AuthStore, palette: Palette, argv: List[str]) -> None
     )
 
 
-def _show_current(store: AuthStore, palette: Palette) -> None:
+def _show_status(
+    store: AuthStore,
+    palette: Palette,
+    argv: List[str],
+    run_codex_status: bool,
+) -> None:
+    if len(argv) > 1:
+        raise RuntimeError("too many status arguments")
+    if argv:
+        _show_named_status(store, palette, argv[0])
+        return
+    _show_current(store, palette, run_codex_status)
+
+
+def _show_named_status(store: AuthStore, palette: Palette, name: str) -> None:
+    validate_name(name)
+    path = store.profile_path(name)
+    if not path.exists():
+        raise RuntimeError(f"profile not found: {name}")
+    marker = "*" if name == store.active_name() else " "
+    print_profile_block(
+        palette,
+        marker,
+        name,
+        profile_identity(path) or "<unknown>",
+        fetch_usage(path),
+        "full",
+    )
+
+
+def _show_current(store: AuthStore, palette: Palette, run_codex_status: bool) -> None:
     active = store.active_name()
     if not active:
         print("Active profile marker: <none>")
         print("Status:   unknown")
-        store.codex_login_status()
+        if run_codex_status:
+            store.codex_login_status()
         return
 
     path = store.profile_path(active)
@@ -159,4 +194,5 @@ def _show_current(store: AuthStore, palette: Palette) -> None:
         fetch_usage(path),
         "full",
     )
-    store.codex_login_status()
+    if run_codex_status:
+        store.codex_login_status()

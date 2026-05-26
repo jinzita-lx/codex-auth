@@ -44,7 +44,7 @@
 直接执行：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.1/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.2/install.sh | bash
 ```
 
 ### 验证安装
@@ -86,7 +86,7 @@ export PATH="$HOME/.local/bin:$PATH"
 需要指定版本或安装位置时：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.1/install.sh | CODEX_AUTH_REF=v0.1.1 CODEX_AUTH_PREFIX="$HOME/.local" bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.2/install.sh | CODEX_AUTH_REF=v0.1.2 CODEX_AUTH_PREFIX="$HOME/.local" bash
 ```
 
 ## 快速开始
@@ -120,6 +120,7 @@ codex-auth list
 
 ```bash
 codex-auth status
+codex-auth status work
 ```
 
 ## 命令说明
@@ -179,9 +180,9 @@ profile            status    plan    5h    7d    account
 codex-auth list --no-check
 ```
 
-### `codex-auth status`
+### `codex-auth status [name]`
 
-展示当前 active profile 的详细状态。
+展示当前 active profile 或指定 profile 的详细状态。
 
 ```text
 * pro
@@ -192,6 +193,13 @@ codex-auth list --no-check
     5h    0% used  100% left  resets 2026-05-26 23:10:00 CST
     7d    3% used   97% left  resets 2026-06-01 19:25:16 CST
   credits: balance=0, reset-credits=0
+```
+
+示例：
+
+```bash
+codex-auth status
+codex-auth status work
 ```
 
 ### `codex-auth check [name|--all]`

@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.1.2
+
+- 支持 `codex-auth status <name>` 查看指定 profile 的详细状态。
+
 ## v0.1.1
 
 - 将 GitHub 仓库调整为 public 后，README 默认使用 `curl` 一键安装。
