@@ -36,41 +36,45 @@
 
 ## 安装
 
-### 一条命令安装
+推荐使用安装脚本。脚本会把项目安装到 `~/.local/share/codex-auth`，并在
+`~/.local/bin/codex-auth` 注册命令。
 
-如果仓库是公开的，可以直接使用 GitHub raw URL：
+### 一键安装
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.0/install.sh | bash
-```
-
-当前仓库是 private 时，先确保本机已经登录 GitHub CLI：
+当前仓库是 private，先确保本机已经登录 GitHub CLI：
 
 ```bash
-gh auth login
+gh auth status || gh auth login
 ```
 
-然后用 `gh api` 拉取安装脚本：
+然后执行安装：
 
 ```bash
 bash -c "$(gh api 'repos/jinzita-lx/codex-auth/contents/install.sh?ref=v0.1.0' --jq .content | base64 -d)"
 ```
 
-也可以指定安装版本或安装位置：
+如果仓库改为 public，也可以直接使用 GitHub raw URL：
 
 ```bash
-CODEX_AUTH_REF=v0.1.0 CODEX_AUTH_PREFIX="$HOME/.local" bash -c "$(gh api 'repos/jinzita-lx/codex-auth/contents/install.sh?ref=v0.1.0' --jq .content | base64 -d)"
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.0/install.sh | bash
 ```
 
-### 目录结构
+### 验证安装
 
-本地安装默认使用：
+安装后执行：
 
-```text
-~/.local/share/codex-auth/     # 项目代码
-~/.local/bin/codex-auth        # PATH 中的可执行入口
-~/.codex/auth-profiles/        # 保存的登录态 profile
-~/.codex/auth.json             # 当前生效的 Codex 登录态
+```bash
+codex-auth --help
+codex-auth path
+```
+
+正常情况下，`codex-auth path` 会显示当前使用的 `CODEX_HOME`、`auth.json`
+和 profile 目录。
+
+如果提示 `codex-auth: command not found`，把 `~/.local/bin` 加入 `PATH`：
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
 ```
 
 ### 依赖
@@ -80,31 +84,21 @@ CODEX_AUTH_REF=v0.1.0 CODEX_AUTH_PREFIX="$HOME/.local" bash -c "$(gh api 'repos/
 - 已安装 Codex CLI，且命令名为 `codex`
 - `~/.local/bin` 已加入 `PATH`
 
-### 注册命令
+### 安装位置
 
-如果已经 clone 了项目，也可以直接注册项目自带 wrapper：`bin/codex-auth`。
+默认安装后会使用：
 
-```bash
-mkdir -p ~/.local/bin
-ln -sf ~/.local/share/codex-auth/bin/codex-auth ~/.local/bin/codex-auth
+```text
+~/.local/share/codex-auth/     # 项目代码
+~/.local/bin/codex-auth        # PATH 中的可执行入口
+~/.codex/auth-profiles/        # 保存的登录态 profile
+~/.codex/auth.json             # 当前生效的 Codex 登录态
 ```
 
-也可以直接使用下面这种 wrapper：
+需要指定版本或安装位置时：
 
 ```bash
-#!/usr/bin/env bash
-set -euo pipefail
-
-project_dir="${CODEX_AUTH_PROJECT:-"$HOME/.local/share/codex-auth"}"
-export PYTHONPATH="$project_dir${PYTHONPATH:+:$PYTHONPATH}"
-exec python3 -m codex_auth "$@"
-```
-
-验证安装：
-
-```bash
-codex-auth --help
-codex-auth path
+CODEX_AUTH_REF=v0.1.0 CODEX_AUTH_PREFIX="$HOME/.local" bash -c "$(gh api 'repos/jinzita-lx/codex-auth/contents/install.sh?ref=v0.1.0' --jq .content | base64 -d)"
 ```
 
 ## 快速开始

@@ -38,41 +38,45 @@ full email address is shown.
 
 ## Install
 
+Use the installer for normal setups. It installs the project into
+`~/.local/share/codex-auth` and registers `~/.local/bin/codex-auth`.
+
 ### One-Line Install
 
-For a public repository, install from GitHub raw:
+This repository is currently private, so make sure GitHub CLI is authenticated:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.0/install.sh | bash
+gh auth status || gh auth login
 ```
 
-For the current private repository, make sure GitHub CLI is authenticated:
-
-```bash
-gh auth login
-```
-
-Then fetch and run the installer through `gh api`:
+Then install:
 
 ```bash
 bash -c "$(gh api 'repos/jinzita-lx/codex-auth/contents/install.sh?ref=v0.1.0' --jq .content | base64 -d)"
 ```
 
-You can also pin the version or install location:
+If the repository becomes public, GitHub raw also works:
 
 ```bash
-CODEX_AUTH_REF=v0.1.0 CODEX_AUTH_PREFIX="$HOME/.local" bash -c "$(gh api 'repos/jinzita-lx/codex-auth/contents/install.sh?ref=v0.1.0' --jq .content | base64 -d)"
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.0/install.sh | bash
 ```
 
-### Layout
+### Verify
 
-This local install uses:
+After installation, run:
 
-```text
-~/.local/share/codex-auth/     # project code
-~/.local/bin/codex-auth        # executable wrapper on PATH
-~/.codex/auth-profiles/        # saved auth profiles
-~/.codex/auth.json             # active Codex auth file
+```bash
+codex-auth --help
+codex-auth path
+```
+
+`codex-auth path` should print the active `CODEX_HOME`, `auth.json`, and profile
+directory.
+
+If `codex-auth` is not found, add `~/.local/bin` to `PATH`:
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
 ```
 
 ### Requirements
@@ -82,31 +86,21 @@ This local install uses:
 - Codex CLI available as `codex`
 - `~/.local/bin` on `PATH`
 
-### Register The Command
+### Install Paths
 
-If you already cloned the project, register the included wrapper at `bin/codex-auth`:
+The default installation uses:
 
-```bash
-mkdir -p ~/.local/bin
-ln -sf ~/.local/share/codex-auth/bin/codex-auth ~/.local/bin/codex-auth
+```text
+~/.local/share/codex-auth/     # project code
+~/.local/bin/codex-auth        # executable wrapper on PATH
+~/.codex/auth-profiles/        # saved auth profiles
+~/.codex/auth.json             # active Codex auth file
 ```
 
-This repository is also usable with a direct wrapper:
+To pin the version or install location:
 
 ```bash
-#!/usr/bin/env bash
-set -euo pipefail
-
-project_dir="${CODEX_AUTH_PROJECT:-"$HOME/.local/share/codex-auth"}"
-export PYTHONPATH="$project_dir${PYTHONPATH:+:$PYTHONPATH}"
-exec python3 -m codex_auth "$@"
-```
-
-Verify:
-
-```bash
-codex-auth --help
-codex-auth path
+CODEX_AUTH_REF=v0.1.0 CODEX_AUTH_PREFIX="$HOME/.local" bash -c "$(gh api 'repos/jinzita-lx/codex-auth/contents/install.sh?ref=v0.1.0' --jq .content | base64 -d)"
 ```
 
 ## Quick Start
