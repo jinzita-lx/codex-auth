@@ -2,7 +2,7 @@
 set -euo pipefail
 
 repo="${CODEX_AUTH_REPO:-jinzita-lx/codex-auth}"
-ref="${CODEX_AUTH_REF:-v0.1.0}"
+ref="${CODEX_AUTH_REF:-v0.1.1}"
 prefix="${CODEX_AUTH_PREFIX:-"$HOME/.local"}"
 project_dir="${CODEX_AUTH_PROJECT_DIR:-"$prefix/share/codex-auth"}"
 bin_dir="${CODEX_AUTH_BIN_DIR:-"$prefix/bin"}"
@@ -81,10 +81,17 @@ resolve_source() {
 
   if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
     log "downloading $repo@$ref with gh"
-    gh repo clone "$repo" "$src" -- --depth 1 >/dev/null
-    if ! git -C "$src" checkout "$ref" >/dev/null 2>&1; then
-      git -C "$src" fetch --depth 1 origin "$ref" >/dev/null 2>&1 || true
-      git -C "$src" checkout "$ref" >/dev/null 2>&1 || die "could not checkout ref: $ref"
+    if ! gh repo clone "$repo" "$src" -- --depth 1 --branch "$ref" >/dev/null 2>&1; then
+      rm -rf "$src"
+      gh repo clone "$repo" "$src" -- --depth 1 >/dev/null
+
+      if ! git -C "$src" checkout "$ref" >/dev/null 2>&1; then
+        git -C "$src" fetch --depth 1 origin "refs/tags/$ref:refs/tags/$ref" >/dev/null 2>&1 || true
+        git -C "$src" checkout "$ref" >/dev/null 2>&1 || {
+          git -C "$src" fetch --depth 1 origin "$ref" >/dev/null 2>&1 || true
+          git -C "$src" checkout FETCH_HEAD >/dev/null 2>&1 || die "could not checkout ref: $ref"
+        }
+      fi
     fi
     printf '%s\n' "$src"
     return 0

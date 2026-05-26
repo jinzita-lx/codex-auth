@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.1
+
+- 将 GitHub 仓库调整为 public 后，README 默认使用 `curl` 一键安装。
+- 修复 `curl | bash` 安装时通过 GitHub CLI 拉取 tag 可能失败的问题。
+
 ## v0.1.0
 
 - 初始化 `codex-auth` 项目结构。

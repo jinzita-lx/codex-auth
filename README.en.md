@@ -43,22 +43,10 @@ Use the installer for normal setups. It installs the project into
 
 ### One-Line Install
 
-This repository is currently private, so make sure GitHub CLI is authenticated:
+Run:
 
 ```bash
-gh auth status || gh auth login
-```
-
-Then install:
-
-```bash
-bash -c "$(gh api 'repos/jinzita-lx/codex-auth/contents/install.sh?ref=v0.1.0' --jq .content | base64 -d)"
-```
-
-If the repository becomes public, GitHub raw also works:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.0/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.1/install.sh | bash
 ```
 
 ### Verify
@@ -100,7 +88,7 @@ The default installation uses:
 To pin the version or install location:
 
 ```bash
-CODEX_AUTH_REF=v0.1.0 CODEX_AUTH_PREFIX="$HOME/.local" bash -c "$(gh api 'repos/jinzita-lx/codex-auth/contents/install.sh?ref=v0.1.0' --jq .content | base64 -d)"
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.1/install.sh | CODEX_AUTH_REF=v0.1.1 CODEX_AUTH_PREFIX="$HOME/.local" bash
 ```
 
 ## Quick Start

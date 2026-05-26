@@ -41,22 +41,10 @@
 
 ### 一键安装
 
-当前仓库是 private，先确保本机已经登录 GitHub CLI：
+直接执行：
 
 ```bash
-gh auth status || gh auth login
-```
-
-然后执行安装：
-
-```bash
-bash -c "$(gh api 'repos/jinzita-lx/codex-auth/contents/install.sh?ref=v0.1.0' --jq .content | base64 -d)"
-```
-
-如果仓库改为 public，也可以直接使用 GitHub raw URL：
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.0/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.1/install.sh | bash
 ```
 
 ### 验证安装
@@ -98,7 +86,7 @@ export PATH="$HOME/.local/bin:$PATH"
 需要指定版本或安装位置时：
 
 ```bash
-CODEX_AUTH_REF=v0.1.0 CODEX_AUTH_PREFIX="$HOME/.local" bash -c "$(gh api 'repos/jinzita-lx/codex-auth/contents/install.sh?ref=v0.1.0' --jq .content | base64 -d)"
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.1/install.sh | CODEX_AUTH_REF=v0.1.1 CODEX_AUTH_PREFIX="$HOME/.local" bash
 ```
 
 ## 快速开始
