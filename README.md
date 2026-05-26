@@ -36,6 +36,32 @@
 
 ## 安装
 
+### 一条命令安装
+
+如果仓库是公开的，可以直接使用 GitHub raw URL：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.0/install.sh | bash
+```
+
+当前仓库是 private 时，先确保本机已经登录 GitHub CLI：
+
+```bash
+gh auth login
+```
+
+然后用 `gh api` 拉取安装脚本：
+
+```bash
+bash -c "$(gh api 'repos/jinzita-lx/codex-auth/contents/install.sh?ref=v0.1.0' --jq .content | base64 -d)"
+```
+
+也可以指定安装版本或安装位置：
+
+```bash
+CODEX_AUTH_REF=v0.1.0 CODEX_AUTH_PREFIX="$HOME/.local" bash -c "$(gh api 'repos/jinzita-lx/codex-auth/contents/install.sh?ref=v0.1.0' --jq .content | base64 -d)"
+```
+
 ### 目录结构
 
 本地安装默认使用：
@@ -56,7 +82,7 @@
 
 ### 注册命令
 
-项目自带 wrapper：`bin/codex-auth`。注册到 `PATH`：
+如果已经 clone 了项目，也可以直接注册项目自带 wrapper：`bin/codex-auth`。
 
 ```bash
 mkdir -p ~/.local/bin
@@ -302,6 +328,12 @@ codex-auth/
 - `utils.py`：JSON、JWT payload 解析、身份提取、时间格式化。
 
 ## 开发
+
+本地安装当前工作区：
+
+```bash
+./install.sh
+```
 
 语法和 import 检查：
 

@@ -38,6 +38,32 @@ full email address is shown.
 
 ## Install
 
+### One-Line Install
+
+For a public repository, install from GitHub raw:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.0/install.sh | bash
+```
+
+For the current private repository, make sure GitHub CLI is authenticated:
+
+```bash
+gh auth login
+```
+
+Then fetch and run the installer through `gh api`:
+
+```bash
+bash -c "$(gh api 'repos/jinzita-lx/codex-auth/contents/install.sh?ref=v0.1.0' --jq .content | base64 -d)"
+```
+
+You can also pin the version or install location:
+
+```bash
+CODEX_AUTH_REF=v0.1.0 CODEX_AUTH_PREFIX="$HOME/.local" bash -c "$(gh api 'repos/jinzita-lx/codex-auth/contents/install.sh?ref=v0.1.0' --jq .content | base64 -d)"
+```
+
 ### Layout
 
 This local install uses:
@@ -58,7 +84,7 @@ This local install uses:
 
 ### Register The Command
 
-The project includes a wrapper at `bin/codex-auth`. Register it with:
+If you already cloned the project, register the included wrapper at `bin/codex-auth`:
 
 ```bash
 mkdir -p ~/.local/bin
@@ -306,6 +332,12 @@ Module responsibilities:
 - `utils.py`: JSON, JWT payload parsing, identity extraction, time formatting.
 
 ## Development
+
+Install the current checkout locally:
+
+```bash
+./install.sh
+```
 
 Syntax and import check:
 
