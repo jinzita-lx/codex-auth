@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="440" viewBox="0 0 1100 440" role="img" aria-label="codex-auth status screenshot with masked account">
+  <style>
+    .bg { fill: #101418; }
+    .bar { fill: #1c232b; }
+    .text { font: 16px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #d6deeb; }
+    .muted { fill: #7f8a99; }
+    .green { fill: #55c878; }
+    .yellow { fill: #e7b84f; }
+    .cyan { fill: #56b6c2; }
+    .blue { fill: #61afef; }
+    .title { font: 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #aeb7c2; }
+  </style>
+  <rect x="0" y="0" width="1100" height="440" rx="12" class="bg"/>
+  <rect x="0" y="0" width="1100" height="42" rx="12" class="bar"/>
+  <circle cx="22" cy="21" r="6" fill="#ff5f57"/>
+  <circle cx="44" cy="21" r="6" fill="#ffbd2e"/>
+  <circle cx="66" cy="21" r="6" fill="#28c840"/>
+  <text x="92" y="27" class="title">codex-auth status</text>
+
+  <text x="28" y="78" class="text">$ codex-auth status</text>
+  <text x="28" y="120" class="text cyan">* pro</text>
+  <text x="48" y="156" class="text muted">account:</text>
+  <text x="155" y="156" class="text">ji***@gmail.com</text>
+  <text x="48" y="192" class="text muted">status:</text>
+  <text x="155" y="192" class="text green">ok</text>
+  <text x="48" y="228" class="text muted">plan:</text>
+  <text x="155" y="228" class="text cyan">prolite</text>
+  <text x="48" y="264" class="text muted">usage:</text>
+  <text x="78" y="300" class="text blue">5h</text>
+  <text x="135" y="300" class="text muted">0% used</text>
+  <text x="250" y="300" class="text green">100% left</text>
+  <text x="380" y="300" class="text muted">resets</text>
+  <text x="470" y="300" class="text cyan">2026-05-26 23:10:00 CST</text>
+  <text x="78" y="336" class="text blue">7d</text>
+  <text x="135" y="336" class="text muted">3% used</text>
+  <text x="250" y="336" class="text green">97% left</text>
+  <text x="380" y="336" class="text muted">resets</text>
+  <text x="470" y="336" class="text cyan">2026-06-01 19:25:16 CST</text>
+  <text x="48" y="372" class="text muted">credits:</text>
+  <text x="155" y="372" class="text">balance=<tspan class="yellow">0</tspan>, reset-credits=<tspan class="yellow">0</tspan></text>
+</svg>
