@@ -46,7 +46,7 @@ Use the installer for normal setups. It installs the project into
 Run:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.2/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.3/install.sh | bash
 ```
 
 ### Verify
@@ -88,7 +88,7 @@ The default installation uses:
 To pin the version or install location:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.2/install.sh | CODEX_AUTH_REF=v0.1.2 CODEX_AUTH_PREFIX="$HOME/.local" bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.3/install.sh | CODEX_AUTH_REF=v0.1.3 CODEX_AUTH_PREFIX="$HOME/.local" bash
 ```
 
 ## Quick Start
@@ -333,6 +333,12 @@ Syntax and import check:
 
 ```bash
 python3 -m compileall -q ~/.local/share/codex-auth/codex_auth
+```
+
+Install smoke test:
+
+```bash
+bash tests/install-smoke.sh
 ```
 
 Run from the project without installing:

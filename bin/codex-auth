@@ -1,6 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-project_dir="${CODEX_AUTH_PROJECT:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"}"
+resolve_script_dir() {
+  local source="${BASH_SOURCE[0]}"
+  local dir target
+
+  while [[ -L "$source" ]]; do
+    dir="$(cd -P "$(dirname "$source")" && pwd)"
+    target="$(readlink "$source")"
+
+    if [[ "$target" == /* ]]; then
+      source="$target"
+    else
+      source="$dir/$target"
+    fi
+  done
+
+  cd -P "$(dirname "$source")" && pwd
+}
+
+script_dir="$(resolve_script_dir)"
+project_dir="${CODEX_AUTH_PROJECT:-"$(cd "$script_dir/.." && pwd)"}"
 export PYTHONPATH="$project_dir${PYTHONPATH:+:$PYTHONPATH}"
 exec python3 -m codex_auth "$@"

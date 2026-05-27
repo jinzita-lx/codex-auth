@@ -44,7 +44,7 @@
 直接执行：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.2/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.3/install.sh | bash
 ```
 
 ### 验证安装
@@ -86,7 +86,7 @@ export PATH="$HOME/.local/bin:$PATH"
 需要指定版本或安装位置时：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.2/install.sh | CODEX_AUTH_REF=v0.1.2 CODEX_AUTH_PREFIX="$HOME/.local" bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.3/install.sh | CODEX_AUTH_REF=v0.1.3 CODEX_AUTH_PREFIX="$HOME/.local" bash
 ```
 
 ## 快速开始
@@ -329,6 +329,12 @@ codex-auth/
 
 ```bash
 python3 -m compileall -q ~/.local/share/codex-auth/codex_auth
+```
+
+安装 smoke test：
+
+```bash
+bash tests/install-smoke.sh
 ```
 
 不安装，直接从项目运行：

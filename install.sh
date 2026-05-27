@@ -2,7 +2,7 @@
 set -euo pipefail
 
 repo="${CODEX_AUTH_REPO:-jinzita-lx/codex-auth}"
-ref="${CODEX_AUTH_REF:-v0.1.2}"
+ref="${CODEX_AUTH_REF:-v0.1.3}"
 prefix="${CODEX_AUTH_PREFIX:-"$HOME/.local"}"
 project_dir="${CODEX_AUTH_PROJECT_DIR:-"$prefix/share/codex-auth"}"
 bin_dir="${CODEX_AUTH_BIN_DIR:-"$prefix/bin"}"
@@ -21,6 +21,55 @@ need_cmd() {
   command -v "$1" >/dev/null 2>&1 || die "missing required command: $1"
 }
 
+check_python_version() {
+  if ! python3 - <<'PY'
+import sys
+
+if sys.version_info < (3, 9):
+    raise SystemExit(1)
+PY
+  then
+    die "Python 3.9+ is required"
+  fi
+}
+
+write_wrapper() {
+  local wrapper="$1"
+  local installed_project_dir="$2"
+  local wrapper_dir
+  local project_bin_dir
+  local tmp_wrapper
+  local quoted_project_dir
+
+  wrapper_dir="$(cd -P "$(dirname "$wrapper")" && pwd)"
+  project_bin_dir="$(cd -P "$installed_project_dir/bin" && pwd)"
+  if [[ "$wrapper_dir" == "$project_bin_dir" ]]; then
+    die "CODEX_AUTH_BIN_DIR must not be the project bin directory: $project_bin_dir"
+  fi
+
+  printf -v quoted_project_dir '%q' "$installed_project_dir"
+  tmp_wrapper="$(mktemp "$wrapper.XXXXXX")"
+
+  cat >"$tmp_wrapper" <<EOF
+#!/usr/bin/env bash
+set -euo pipefail
+
+default_project_dir=$quoted_project_dir
+export CODEX_AUTH_PROJECT="\${CODEX_AUTH_PROJECT:-\$default_project_dir}"
+exec "\$CODEX_AUTH_PROJECT/bin/codex-auth" "\$@"
+EOF
+  chmod 700 "$tmp_wrapper"
+  mv -f "$tmp_wrapper" "$wrapper"
+}
+
+same_path() {
+  local left="$1"
+  local right="$2"
+
+  [[ -d "$left" && -d "$right" ]] || return 1
+  [[ "$(cd -P "$left" && pwd)" == "$(cd -P "$right" && pwd)" ]]
+}
+
 copy_project() {
   local src="$1"
   local dst="$2"
@@ -29,7 +78,7 @@ copy_project() {
   mkdir -p "$dst"
 
   local item
-  for item in README.md README.en.md CHANGELOG.md pyproject.toml install.sh bin codex_auth docs; do
+  for item in README.md README.en.md CHANGELOG.md pyproject.toml install.sh bin codex_auth docs tests; do
     if [[ -e "$src/$item" ]]; then
       cp -R "$src/$item" "$dst/"
     fi
@@ -118,6 +167,7 @@ resolve_source() {
 
 main() {
   need_cmd python3
+  check_python_version
 
   install_tmp="$(mktemp -d)"
   trap 'rm -rf "$install_tmp"' EXIT
@@ -129,18 +179,23 @@ main() {
   log "checking Python modules"
   python3 -m compileall -q "$src/codex_auth"
 
-  local stage="$install_tmp/codex-auth"
-  copy_project "$src" "$stage"
+  if same_path "$src" "$project_dir"; then
+    log "using existing project at $project_dir"
+  else
+    local stage="$install_tmp/codex-auth"
+    copy_project "$src" "$stage"
 
-  log "installing project to $project_dir"
-  mkdir -p "$(dirname "$project_dir")"
-  rm -rf "$project_dir"
-  mv "$stage" "$project_dir"
+    log "installing project to $project_dir"
+    mkdir -p "$(dirname "$project_dir")"
+    rm -rf "$project_dir"
+    mv "$stage" "$project_dir"
+  fi
+
   chmod 700 "$project_dir/bin/codex-auth"
 
-  log "linking executable to $bin_dir/codex-auth"
+  log "writing executable to $bin_dir/codex-auth"
   mkdir -p "$bin_dir"
-  ln -sfn "$project_dir/bin/codex-auth" "$bin_dir/codex-auth"
+  write_wrapper "$bin_dir/codex-auth" "$project_dir"
 
   "$bin_dir/codex-auth" --help >/dev/null
 

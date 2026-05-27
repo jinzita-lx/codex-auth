@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.3
+
+- 修复 PATH 入口通过符号链接启动时无法加载 `codex_auth` 模块的问题。
+- 安装器改为生成固定项目路径的可执行 wrapper，提升一键安装可靠性。
+- 增加 Python 版本检查和安装 smoke test。
+
 ## v0.1.2
 
 - 支持 `codex-auth status <name>` 查看指定 profile 的详细状态。
