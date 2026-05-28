@@ -53,7 +53,7 @@ Use the installer for normal setups. It installs the project into
 Run:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.4/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.5/install.sh | bash
 ```
 
 ### Verify
@@ -95,7 +95,7 @@ The default installation uses:
 To pin the version or install location:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.4/install.sh | CODEX_AUTH_REF=v0.1.4 CODEX_AUTH_PREFIX="$HOME/.local" bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.5/install.sh | CODEX_AUTH_REF=v0.1.5 CODEX_AUTH_PREFIX="$HOME/.local" bash
 ```
 
 ## Quick Start

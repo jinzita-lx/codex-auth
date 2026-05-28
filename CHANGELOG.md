@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.5
+
+- 修复 API 计费 profile 的 `status/list` 显示：当 profile 存在
+  `config.toml` sidecar 时，直接读取 provider 名称作为 plan，避免把
+  PeachCode 等自定义 provider 误判为不可用。
+
 ## v0.1.4
 
 - 修复外部 API key 登录改写 `auth.json` 后，active profile 标记可能误导

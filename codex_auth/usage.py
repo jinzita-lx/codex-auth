@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
+import re
 from typing import Any, Dict, Tuple
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -62,6 +63,9 @@ def fetch_usage(profile_path: Path) -> UsageSummary:
         return UsageSummary.empty("missing")
 
     if data.get("OPENAI_API_KEY"):
+        provider = api_provider_name(profile_path)
+        if provider:
+            return UsageSummary(status="ok", plan=provider)
         code, _ = _request_json("https://api.openai.com/v1/models", str(token))
         if code == 200:
             return UsageSummary(status="ok", plan="api-key")
@@ -111,3 +115,27 @@ def fetch_usage(profile_path: Path) -> UsageSummary:
         credits_balance=balance,
         reset_credits=str(reset_credits.get("available_count", "-")),
     )
+
+
+def api_provider_name(profile_path: Path) -> str:
+    config_path = profile_path.with_name(f"{profile_path.stem}.config.toml")
+    if not config_path.exists():
+        return ""
+    try:
+        text = config_path.read_text(encoding="utf-8")
+    except OSError:
+        return ""
+
+    for line in text.splitlines():
+        match = re.match(r'^\s*model_provider\s*=\s*"([^"]+)"\s*(?:#.*)?$', line)
+        if match:
+            return match.group(1)
+
+    for line in text.splitlines():
+        match = re.match(r'^\s*\[model_providers\.([A-Za-z0-9_-]+)\]\s*$', line)
+        if match:
+            return match.group(1)
+        match = re.match(r'^\s*\[model_providers\."([^"]+)"\]\s*$', line)
+        if match:
+            return match.group(1)
+    return ""

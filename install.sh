@@ -2,7 +2,7 @@
 set -euo pipefail
 
 repo="${CODEX_AUTH_REPO:-jinzita-lx/codex-auth}"
-ref="${CODEX_AUTH_REF:-v0.1.4}"
+ref="${CODEX_AUTH_REF:-v0.1.5}"
 prefix="${CODEX_AUTH_PREFIX:-"$HOME/.local"}"
 project_dir="${CODEX_AUTH_PROJECT_DIR:-"$prefix/share/codex-auth"}"
 bin_dir="${CODEX_AUTH_BIN_DIR:-"$prefix/bin"}"

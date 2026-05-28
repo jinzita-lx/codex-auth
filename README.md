@@ -51,7 +51,7 @@
 直接执行：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.4/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.5/install.sh | bash
 ```
 
 ### 验证安装
@@ -93,7 +93,7 @@ export PATH="$HOME/.local/bin:$PATH"
 需要指定版本或安装位置时：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.4/install.sh | CODEX_AUTH_REF=v0.1.4 CODEX_AUTH_PREFIX="$HOME/.local" bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.5/install.sh | CODEX_AUTH_REF=v0.1.5 CODEX_AUTH_PREFIX="$HOME/.local" bash
 ```
 
 ## 快速开始
