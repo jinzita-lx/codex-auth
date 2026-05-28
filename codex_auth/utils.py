@@ -52,6 +52,8 @@ def jwt_payload(token: str) -> Dict[str, Any]:
 
 def profile_identity(path: Path) -> str:
     data = load_json(path)
+    if data.get("OPENAI_API_KEY"):
+        return "<api-key>"
     token = (
         data.get("tokens", {}).get("id_token")
         or data.get("tokens", {}).get("idToken")
@@ -66,8 +68,6 @@ def profile_identity(path: Path) -> str:
     profile = payload.get("https://api.openai.com/profile")
     if isinstance(profile, dict) and profile.get("email"):
         return str(profile["email"])
-    if data.get("OPENAI_API_KEY"):
-        return "<api-key>"
     for key in ("email", "account"):
         if data.get(key):
             return str(data[key])
@@ -77,6 +77,9 @@ def profile_identity(path: Path) -> str:
 
 def profile_identity_key(path: Path) -> str:
     data = load_json(path)
+    if data.get("OPENAI_API_KEY"):
+        raw = str(data["OPENAI_API_KEY"]).encode("utf-8")
+        return "api-key:" + base64.b64encode(raw).decode("ascii")
     token = (
         data.get("tokens", {}).get("id_token")
         or data.get("tokens", {}).get("idToken")
@@ -90,9 +93,6 @@ def profile_identity_key(path: Path) -> str:
     for key in ("email", "sub"):
         if payload.get(key):
             return str(payload[key])
-    if data.get("OPENAI_API_KEY"):
-        raw = str(data["OPENAI_API_KEY"]).encode("utf-8")
-        return "api-key:" + base64.b64encode(raw).decode("ascii")
     for key in ("account_id",):
         value = data.get("tokens", {}).get(key)
         if value:

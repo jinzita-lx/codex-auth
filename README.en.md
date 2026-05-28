@@ -4,10 +4,12 @@
 
 `codex-auth` is a local profile switcher for Codex CLI authentication.
 
-It keeps one shared Codex home, config, session history, skills, and plugins, while
-allowing multiple saved `auth.json` profiles. Switching accounts only replaces the
-local `~/.codex/auth.json`; it does not run `codex logout`, so it does not actively
-revoke the previous account.
+It keeps one shared Codex home, session history, skills, and plugins, while
+allowing multiple saved `auth.json` profiles. It can also save a matching
+`config.toml` for API-billed provider profiles. Switching accounts replaces the
+local `~/.codex/auth.json`, restores `config.toml` when the target profile has
+one, and restarts the Codex app-server; it does not run `codex logout`, so it
+does not actively revoke the previous account.
 
 ## Screenshots
 
@@ -26,10 +28,15 @@ full email address is shown.
 
 ![codex-auth login](docs/assets/login-flow.svg)
 
+### API-Billed Profile
+
+![codex-auth login-api](docs/assets/api-login-flow.svg)
+
 ## Features
 
-- Save the current Codex login as a named profile.
-- Switch between profiles by replacing the local `auth.json`.
+- Save the current Codex login as a named profile, optionally with `config.toml`.
+- Create API-billed provider profiles through interactive `login-api`; API keys use hidden input.
+- Switch between profiles by replacing the local `auth.json` and optional `config.toml`, then restarting the Codex app-server.
 - Add a new account without calling `codex logout`.
 - Show concise account summaries with profile, status, plan, and 5h/7d remaining quota.
 - Show detailed current-account status, including reset time and credits.
@@ -46,7 +53,7 @@ Use the installer for normal setups. It installs the project into
 Run:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.3/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.4/install.sh | bash
 ```
 
 ### Verify
@@ -88,7 +95,7 @@ The default installation uses:
 To pin the version or install location:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.3/install.sh | CODEX_AUTH_REF=v0.1.3 CODEX_AUTH_PREFIX="$HOME/.local" bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.4/install.sh | CODEX_AUTH_REF=v0.1.4 CODEX_AUTH_PREFIX="$HOME/.local" bash
 ```
 
 ## Quick Start
@@ -103,6 +110,12 @@ Login another account without logging out the current one:
 
 ```bash
 codex-auth login work
+```
+
+Create an API-billed profile:
+
+```bash
+codex-auth login-api
 ```
 
 Switch accounts:
@@ -149,20 +162,56 @@ codex-auth login work --replace
 codex-auth login work --device-auth
 ```
 
-### `codex-auth save <name>`
+### `codex-auth login-api`
 
-Save the current `~/.codex/auth.json` as a named profile.
+Interactively create an API-billed profile. The command does not accept API key,
+provider, or base URL arguments, so secrets do not land in shell history. All
+values are collected through prompts, and the API key uses hidden input.
+
+It prompts for:
+
+- profile name
+- provider name, default `PeachCode`
+- base URL, default `https://cli.rhinelab.com.cn`
+- API key
+- model, default `gpt-5.5`
+- whether to customize advanced settings
+
+It creates:
+
+```text
+~/.codex/auth-profiles/<name>.json
+~/.codex/auth-profiles/<name>.config.toml
+```
+
+and immediately switches to that API profile.
+
+```bash
+codex-auth login-api
+```
+
+### `codex-auth save [--with-config] <name>`
+
+Save the current `~/.codex/auth.json` as a named profile. With `--with-config`,
+also save the current `~/.codex/config.toml`, which is useful for API-billed
+provider profiles.
 
 ```bash
 codex-auth save personal
+codex-auth save --with-config peach-api
 ```
 
-### `codex-auth switch <name>`
+### `codex-auth switch [--no-restart-app-server] <name>`
 
-Switch active Codex auth to a saved profile.
+Switch active Codex auth to a saved profile. By default this stops existing
+Codex app-server/proxy processes, then starts `codex app-server --listen
+unix://` so a running background service does not keep using stale auth.
+If the target profile has a saved config, switching restores its `config.toml`;
+before switching away, the current active profile's config is saved automatically.
 
 ```bash
 codex-auth switch work
+codex-auth switch --no-restart-app-server work
 ```
 
 ### `codex-auth list [--no-check]`
@@ -279,7 +328,10 @@ Color mapping:
 
 ## Safety Notes
 
-- `codex-auth switch` only swaps the local `auth.json`.
+- `codex-auth switch` swaps the local `auth.json`, stops stale app-server/proxy
+  processes, and restarts the app-server by default.
+- Use `codex-auth switch --no-restart-app-server <name>` if you do not want to
+  stop or restart Codex app-server/proxy processes.
 - `codex-auth login` intentionally avoids `codex logout`.
 - `codex logout` may revoke the current token; avoid using it for profile switching.
 - Profiles are stored under `~/.codex/auth-profiles/` with mode `0600`.
@@ -287,6 +339,9 @@ Color mapping:
   directly from Python; tokens are not passed as command-line arguments.
 - Before autosaving over an active profile, `codex-auth` compares account identity
   and skips the write if the current `auth.json` belongs to a different account.
+- If `auth.json` is changed externally, for example by `codex login --with-api-key`,
+  `codex-auth list/status` reports the stale active marker and will not save the
+  API-key login over the previous ChatGPT profile.
 
 ## Project Structure
 

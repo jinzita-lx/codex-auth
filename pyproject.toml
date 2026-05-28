@@ -1,6 +1,6 @@
 [project]
 name = "codex-auth"
-version = "0.1.3"
+version = "0.1.4"
 description = "Local Codex auth profile switcher"
 requires-python = ">=3.9"
 

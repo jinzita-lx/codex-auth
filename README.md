@@ -4,9 +4,11 @@
 
 `codex-auth` 是一个 Codex CLI 本地登录态 profile 切换器。
 
-它保留同一套 Codex home、配置、会话历史、skills 和 plugins，只把不同账号的
-`auth.json` 保存成命名 profile。切换账号时只替换本地 `~/.codex/auth.json`，
-不会执行 `codex logout`，因此不会主动注销或撤销原账号登录态。
+它保留同一套 Codex home、会话历史、skills 和 plugins，把不同账号的
+`auth.json` 保存成命名 profile，也可以为需要 API 计费的账号保存对应
+`config.toml`。切换账号时会替换本地 `~/.codex/auth.json`，在目标 profile
+带有配置时同步替换 `config.toml`，并重启 Codex app-server；不会执行
+`codex logout`，因此不会主动注销或撤销原账号登录态。
 
 ## 效果展示
 
@@ -24,10 +26,15 @@
 
 ![codex-auth login](docs/assets/login-flow.svg)
 
+### API 计费 profile
+
+![codex-auth login-api](docs/assets/api-login-flow.svg)
+
 ## 功能
 
-- 将当前 Codex 登录态保存成命名 profile。
-- 通过替换本地 `auth.json` 在多个 profile 间切换。
+- 将当前 Codex 登录态保存成命名 profile，可选保存对应 `config.toml`。
+- 通过纯交互式 `login-api` 创建 API 计费 provider profile，API key 使用隐藏输入。
+- 通过替换本地 `auth.json` 和可选 `config.toml` 在多个 profile 间切换，并重启 Codex app-server。
 - 新增账号时不调用 `codex logout`，避免主动撤销当前账号 token。
 - 用精简列表展示 profile、状态、套餐、5h/7d 剩余额度。
 - 用详细状态页展示当前账号额度、reset 时间和 credits。
@@ -44,7 +51,7 @@
 直接执行：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.3/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.4/install.sh | bash
 ```
 
 ### 验证安装
@@ -86,7 +93,7 @@ export PATH="$HOME/.local/bin:$PATH"
 需要指定版本或安装位置时：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.3/install.sh | CODEX_AUTH_REF=v0.1.3 CODEX_AUTH_PREFIX="$HOME/.local" bash
+curl -fsSL https://raw.githubusercontent.com/jinzita-lx/codex-auth/v0.1.4/install.sh | CODEX_AUTH_REF=v0.1.4 CODEX_AUTH_PREFIX="$HOME/.local" bash
 ```
 
 ## 快速开始
@@ -101,6 +108,12 @@ codex-auth save personal
 
 ```bash
 codex-auth login work
+```
+
+创建 API 计费 profile：
+
+```bash
+codex-auth login-api
 ```
 
 切换账号：
@@ -147,20 +160,53 @@ codex-auth login work --replace
 codex-auth login work --device-auth
 ```
 
-### `codex-auth save <name>`
+### `codex-auth login-api`
 
-将当前 `~/.codex/auth.json` 保存为命名 profile。
+交互式创建 API 计费 profile。命令不接收 API key、provider 或 base URL 参数，
+避免密钥进入 shell history；所有内容通过 prompt 填写，API key 使用隐藏输入。
+
+会询问：
+
+- profile 名
+- provider 名，默认 `PeachCode`
+- base URL，默认 `https://cli.rhinelab.com.cn`
+- API key
+- model，默认 `gpt-5.5`
+- 是否自定义高级配置
+
+创建后会保存：
+
+```text
+~/.codex/auth-profiles/<name>.json
+~/.codex/auth-profiles/<name>.config.toml
+```
+
+并立即切换到该 API profile。
+
+```bash
+codex-auth login-api
+```
+
+### `codex-auth save [--with-config] <name>`
+
+将当前 `~/.codex/auth.json` 保存为命名 profile。加 `--with-config` 时，也会保存
+当前 `~/.codex/config.toml`，适合 API 计费 provider profile。
 
 ```bash
 codex-auth save personal
+codex-auth save --with-config peach-api
 ```
 
-### `codex-auth switch <name>`
+### `codex-auth switch [--no-restart-app-server] <name>`
 
-切换到已保存的 profile。
+切换到已保存的 profile。默认会停止已有的 Codex app-server/proxy 进程，然后
+重新启动 `codex app-server --listen unix://`，避免后台服务继续使用旧认证缓存。
+如果目标 profile 保存了 config，切换时也会恢复对应 `config.toml`；切走前会
+自动保存当前 active profile 的 config。
 
 ```bash
 codex-auth switch work
+codex-auth switch --no-restart-app-server work
 ```
 
 ### `codex-auth list [--no-check]`
@@ -275,7 +321,9 @@ NO_COLOR=1 codex-auth status
 
 ## 安全说明
 
-- `codex-auth switch` 只替换本地 `auth.json`。
+- `codex-auth switch` 会替换本地 `auth.json`，并默认停止旧 app-server/proxy 后重启 app-server。
+- 如果不希望停止或重启 Codex app-server/proxy，可使用
+  `codex-auth switch --no-restart-app-server <name>`。
 - `codex-auth login` 刻意避免调用 `codex logout`。
 - `codex logout` 可能撤销当前 token，不建议用于 profile 切换。
 - profile 存放在 `~/.codex/auth-profiles/`，文件权限为 `0600`。
@@ -283,6 +331,9 @@ NO_COLOR=1 codex-auth status
   token 不会作为命令行参数暴露。
 - 自动保存 active profile 前，`codex-auth` 会比较账号身份；如果当前
   `auth.json` 属于另一个账号，会跳过写入，避免覆盖错误 profile。
+- 如果手动使用过 `codex login --with-api-key` 等外部方式修改了
+  `auth.json`，`codex-auth list/status` 会提示 active 标记已过期，
+  不会把 API key 登录态误保存到原来的 ChatGPT profile。
 
 ## 项目结构
 

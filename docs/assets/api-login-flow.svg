@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="470" viewBox="0 0 1100 470" role="img" aria-label="codex-auth login-api screenshot with masked API key">
+  <style>
+    .bg { fill: #101418; }
+    .bar { fill: #1c232b; }
+    .text { font: 16px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #d6deeb; }
+    .muted { fill: #7f8a99; }
+    .green { fill: #55c878; }
+    .yellow { fill: #e7b84f; }
+    .cyan { fill: #56b6c2; }
+    .title { font: 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #aeb7c2; }
+  </style>
+  <rect x="0" y="0" width="1100" height="470" rx="12" class="bg"/>
+  <rect x="0" y="0" width="1100" height="42" rx="12" class="bar"/>
+  <circle cx="22" cy="21" r="6" fill="#ff5f57"/>
+  <circle cx="44" cy="21" r="6" fill="#ffbd2e"/>
+  <circle cx="66" cy="21" r="6" fill="#28c840"/>
+  <text x="92" y="27" class="title">codex-auth login-api</text>
+
+  <text x="28" y="76" class="text">$ codex-auth login-api</text>
+  <text x="28" y="112" class="text">Profile name: <tspan class="cyan">peach-api</tspan></text>
+  <text x="28" y="148" class="text">Provider name [PeachCode]:</text>
+  <text x="28" y="184" class="text">Base URL [https://cli.rhinelab.com.cn]:</text>
+  <text x="28" y="220" class="text">API key: <tspan class="muted">************</tspan></text>
+  <text x="28" y="256" class="text">Model [gpt-5.5]:</text>
+  <text x="28" y="292" class="text">Customize advanced settings? [y/N]: <tspan class="cyan">n</tspan></text>
+  <text x="28" y="340" class="text green">Saved API auth profile: peach-api</text>
+  <text x="28" y="376" class="text green">Saved API config profile: peach-api</text>
+  <text x="28" y="412" class="text yellow">Restarted Codex app-server so future sessions reload auth.</text>
+  <text x="28" y="446" class="text muted">Logged in using an API key - sk-****...****</text>
+</svg>
